@@ -1,5 +1,9 @@
+// Basic demo for accelerometer/gyro readings from Adafruit ISM330DHCX
+
 #include <Adafruit_ISM330DHCX.h>
-#include "arduinoFFT.h"
+
+#define BUTTON_A 0
+#define BUTTON_B 16
 
 // For SPI mode, we need a CS pin
 #define LSM_CS 10
@@ -8,38 +12,17 @@
 #define LSM_MISO 12
 #define LSM_MOSI 11
 
-// FFT Constants
-const uint16_t samples = 64; //(Default: 64) This value MUST ALWAYS be a power of 2
-const double signalFrequency = 1000;
-const double samplingFrequency = 5000; // (Default: 5000)
-const uint8_t amplitude = 100;
-const double ratio = twoPi * signalFrequency / samplingFrequency; // Fraction of a complete cycle stored at each sample (in radians)
-  
-/*
-These are the input and output vectors
-Input vectors receive computed results from FFT
-*/
-double vReal[samples];
-double vImag[samples];
-
-/* Create FFT object */
-ArduinoFFT<double> FFT = ArduinoFFT<double>(vReal, vImag, samples, samplingFrequency);
-
-// FFT Definitions
-#define SCL_INDEX 0x00
-#define SCL_TIME 0x01
-#define SCL_FREQUENCY 0x02
-#define SCL_PLOT 0x03
-
 Adafruit_ISM330DHCX ism330dhcx;
 void setup(void) {
   Serial.begin(115200);
   while (!Serial)
     delay(10); // will pause Zero, Leonardo, etc until serial console opens
 
-  Serial.println("Ready to go!");
+  Serial.println("Adafruit ISM330DHCX test!");
 
   if (!ism330dhcx.begin_I2C()) {
+    // if (!ism330dhcx.begin_SPI(LSM_CS)) {
+    // if (!ism330dhcx.begin_SPI(LSM_CS, LSM_SCK, LSM_MISO, LSM_MOSI)) {
     Serial.println("Failed to find ISM330DHCX chip");
     while (1) {
       delay(10);
@@ -65,6 +48,28 @@ void setup(void) {
     break;
   }
 
+  // ism330dhcx.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS);
+  Serial.print("Gyro range set to: ");
+  switch (ism330dhcx.getGyroRange()) {
+  case LSM6DS_GYRO_RANGE_125_DPS:
+    Serial.println("125 degrees/s");
+    break;
+  case LSM6DS_GYRO_RANGE_250_DPS:
+    Serial.println("250 degrees/s");
+    break;
+  case LSM6DS_GYRO_RANGE_500_DPS:
+    Serial.println("500 degrees/s");
+    break;
+  case LSM6DS_GYRO_RANGE_1000_DPS:
+    Serial.println("1000 degrees/s");
+    break;
+  case LSM6DS_GYRO_RANGE_2000_DPS:
+    Serial.println("2000 degrees/s");
+    break;
+  case ISM330DHCX_GYRO_RANGE_4000_DPS:
+    Serial.println("4000 degrees/s");
+    break;
+  }
 
   // ism330dhcx.setAccelDataRate(LSM6DS_RATE_12_5_HZ);
   Serial.print("Accelerometer data rate set to: ");
@@ -104,103 +109,103 @@ void setup(void) {
     break;
   }
 
+  // ism330dhcx.setGyroDataRate(LSM6DS_RATE_12_5_HZ);
+  Serial.print("Gyro data rate set to: ");
+  switch (ism330dhcx.getGyroDataRate()) {
+  case LSM6DS_RATE_SHUTDOWN:
+    Serial.println("0 Hz");
+    break;
+  case LSM6DS_RATE_12_5_HZ:
+    Serial.println("12.5 Hz");
+    break;
+  case LSM6DS_RATE_26_HZ:
+    Serial.println("26 Hz");
+    break;
+  case LSM6DS_RATE_52_HZ:
+    Serial.println("52 Hz");
+    break;
+  case LSM6DS_RATE_104_HZ:
+    Serial.println("104 Hz");
+    break;
+  case LSM6DS_RATE_208_HZ:
+    Serial.println("208 Hz");
+    break;
+  case LSM6DS_RATE_416_HZ:
+    Serial.println("416 Hz");
+    break;
+  case LSM6DS_RATE_833_HZ:
+    Serial.println("833 Hz");
+    break;
+  case LSM6DS_RATE_1_66K_HZ:
+    Serial.println("1.66 KHz");
+    break;
+  case LSM6DS_RATE_3_33K_HZ:
+    Serial.println("3.33 KHz");
+    break;
+  case LSM6DS_RATE_6_66K_HZ:
+    Serial.println("6.66 KHz");
+    break;
+  }
 
   ism330dhcx.configInt1(false, false, true); // accelerometer DRDY on INT1
   ism330dhcx.configInt2(false, true, false); // gyro DRDY on INT2
 }
-
-void PrintVector(double *vData, uint16_t bufferSize, uint8_t scaleType)
-{
-  for (uint16_t i = 0; i < bufferSize; i++)
-  {
-    double abscissa;
-    /* Print abscissa value */
-    switch (scaleType)
-    {
-      case SCL_INDEX:
-        abscissa = (i * 1.0);
-	      break;
-      case SCL_TIME:
-        abscissa = ((i * 1.0) / samplingFrequency);
-        break;
-      case SCL_FREQUENCY:
-        abscissa = ((i * 1.0 * samplingFrequency) / samples);
-	      break;
-    }
-    if(scaleType!=SCL_PLOT)
-    {
-      Serial.print(abscissa, 6);
-      if(scaleType==SCL_FREQUENCY)
-        Serial.print("Hz");
-      Serial.print(" ");
-    }
-    Serial.println(vData[i], 4);
-  }
-  Serial.println();
-}
-
-
-// Returns spatial difference of two 3D points in space
-double spatialDifference(float prev_position[], float current_position[]){
-  float intensity = 0.0;
-  // Finds the difference between points x, y, and z and previous readings
-  for(int i=0;i<3;i++){
-    intensity += abs(current_position[i] - prev_position[i]);
-  }
-  
-  return intensity;
-}
-
-void readAcceleration(uint16_t iter, double magnitude){
-  vReal[iter] = int8_t(amplitude * magnitude);/* Build data with positive and negative values*/
-  //vReal[iter] = int8_t(amplitude * sin(iter * ratio) / 2.0); // Test Sample
-  vImag[iter] = 0.0; //Imaginary part must be zeroed in case of looping to avoid wrong calculations and overflows
-}
-
-// Returns major peak
-double calculateFFT(){
-  FFT.windowing(FFTWindow::Hamming, FFTDirection::Forward);	/* Weigh data */
-  FFT.compute(FFTDirection::Forward); /* Compute FFT */
-  FFT.complexToMagnitude(); /* Compute magnitudes */
-  PrintVector(vReal, samples>>1, SCL_PLOT);
-  return FFT.majorPeak();
-}
+int samples = 1;
+float magnitude = 0;
+float stationary_avg = 0;
+bool vibrating = false;
+float offsetX = 0, offsetY = 0, offsetZ = 0;
 
 void loop() {
+  //  /* Get a new normalized sensor event */
   sensors_event_t accel;
   sensors_event_t gyro;
   sensors_event_t temp;
-  float prev_pos[3];
-  bool readAccel = false;
-  for (uint16_t i = 0; i < samples;)
-  {
-    //  /* Get a new normalized sensor event */
-    
-    ism330dhcx.getEvent(&accel, &gyro, &temp);
-    if(readAccel){
-      readAcceleration(i++, spatialDifference(prev_pos,accel.acceleration.v));
-    }
-    readAccel = !readAccel;
-    //prev_pos = accel.acceleration.v;
-    memcpy(accel.acceleration.v,prev_pos,sizeof(float)*3);
-    delayMicroseconds(10000);
-  }
-  double maxFreq = calculateFFT();
-  Serial.print("Highest Frequency: ");
-  Serial.println(maxFreq,6);
-  delay(3000);
-  Serial.println(ism330dhcx.shake());
-  if(false){
+  ism330dhcx.getEvent(&accel, &gyro, &temp);
+   
+  
 
-    
-    // serial plotter friendly format
+         //serial plotter friendly format
+
 
       Serial.print(accel.acceleration.x);
       Serial.print(","); Serial.print(accel.acceleration.y);
       Serial.print(","); Serial.print(accel.acceleration.z);
-      Serial.print(",");
-      
+      Serial.print(","); Serial.print(accel.acceleration.z);
+      Serial.print(","); Serial.print(stationary_avg);
+      Serial.print(","); Serial.print(magnitude/samples);
+      Serial.print(","); Serial.println(vibrating);
+    
+    if(!digitalRead(BUTTON_A)){
+      delay(3000);
+      //stationary_avg =0;
+      float x=0,y=0,z=0;
+      for(int i=0;i<64;i++){
+        ism330dhcx.getEvent(&accel, &gyro, &temp);
+        x += accel.acceleration.x;
+        y += accel.acceleration.y;
+        z += accel.acceleration.z;
+        delayMicroseconds(10000);
+      }
+      x /= 64;
+      y /= 64;
+      z /= 64;
+      offsetX = x;
+      offsetY = y;
+      offsetZ = z;
 
-      delayMicroseconds(10000);
-  }
+      //stationary_avg = sqrt(sq(x)+sq(y)+sq(z));
+      //stationary_avg /= 64;
+    }
+    magnitude += sqrt(sq(accel.acceleration.x-offsetX)+sq(accel.acceleration.y-offsetY)+sq(accel.acceleration.z-offsetZ));
+    if(samples++ == 64){
+      
+      magnitude /= samples;
+      samples = 1;
+      vibrating = (10 >(stationary_avg/magnitude*100));
+      magnitude = 0;
+   
+    }
+
+    delayMicroseconds(10000);
 }

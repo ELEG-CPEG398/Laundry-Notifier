@@ -140,9 +140,15 @@ void PrintVector(double *vData, uint16_t bufferSize, uint8_t scaleType)
 }
 
 
-// Returns magnitude of 3D vector
-double vectorMagnitude(double x, double y, double z){
-  return sqrt(sq(x)+sq(y)+sq(z));
+// Returns spatial difference of two 3D points in space
+double spatialDifference(float prev_position[], float current_position[]){
+  float intensity = 0.0;
+  // Finds the difference between points x, y, and z and previous readings
+  for(int i=0;i<3;i++){
+    intensity += abs(current_position[i] - prev_position[i]);
+  }
+  
+  return intensity;
 }
 
 void readAcceleration(uint16_t iter, double magnitude){
@@ -164,18 +170,26 @@ void loop() {
   sensors_event_t accel;
   sensors_event_t gyro;
   sensors_event_t temp;
-  for (uint16_t i = 0; i < samples; i++)
+  float prev_pos[3];
+  bool readAccel = false;
+  for (uint16_t i = 0; i < samples;)
   {
     //  /* Get a new normalized sensor event */
     
     ism330dhcx.getEvent(&accel, &gyro, &temp);
-    readAcceleration(i, vectorMagnitude(accel.acceleration.x,accel.acceleration.y,accel.acceleration.z));
+    if(readAccel){
+      readAcceleration(i++, spatialDifference(prev_pos,accel.acceleration.v));
+    }
+    readAccel = !readAccel;
+    //prev_pos = accel.acceleration.v;
+    memcpy(accel.acceleration.v,prev_pos,sizeof(float)*3);
     delayMicroseconds(10000);
   }
   double maxFreq = calculateFFT();
   Serial.print("Highest Frequency: ");
   Serial.println(maxFreq,6);
   delay(3000);
+  Serial.println(ism330dhcx.shake());
   if(false){
 
     
@@ -185,7 +199,7 @@ void loop() {
       Serial.print(","); Serial.print(accel.acceleration.y);
       Serial.print(","); Serial.print(accel.acceleration.z);
       Serial.print(",");
-      Serial.println(ism330dhcx.shake());
+      
 
       delayMicroseconds(10000);
   }

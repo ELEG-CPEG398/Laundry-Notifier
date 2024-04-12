@@ -202,7 +202,7 @@ void loop() {
       
       magnitude /= samples;
       samples = 1;
-      vibrating = (10 >(stationary_avg/magnitude*100));
+      vibrating = (0.10 < magnitude);
       magnitude = 0;
    
     }

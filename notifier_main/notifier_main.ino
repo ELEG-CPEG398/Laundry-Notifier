@@ -3,13 +3,20 @@
    All rights reserved.
 
 */
+// Config file
+#include "config.h"
+
 
 // Libraries for ESP8266 
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClientSecureBearSSL.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <StreamString.h>
+
+
 
 // Libraries for OLED
 #include <SPI.h>
@@ -18,10 +25,10 @@
 #include <Adafruit_SH110X.h>
 
 // ESP8266 definitions
-#ifndef STASSID
-#define STASSID "UD Devices"
-#define STAPSK ""
-#endif
+//#ifndef STASSID
+//#define STASSID "UD Devices"
+//#define STAPSK ""
+//#endif
 
 // OLED definitions
 #if defined(ESP8266)
@@ -30,8 +37,6 @@
   #define BUTTON_C  2
 #endif
 
-const char *ssid = STASSID;
-const char *password = STAPSK;
 
 ESP8266WebServer server(80);
 Adafruit_SH1107 display = Adafruit_SH1107(64, 128, &Wire);
@@ -184,6 +189,49 @@ void setup(void) {
 void loop(void) {
   server.handleClient();
   MDNS.update();
+
+  std::unique_ptr<BearSSL::WiFiClientSecure>client(new BearSSL::WiFiClientSecure);
+
+  // Ignore SSL certificate validation
+  client->setInsecure();
+    
+  //create an HTTPClient instance
+  HTTPClient https;
+
+
+  //Initializing an HTTPS communication using the secure client
+  Serial.print("[HTTPS] begin...\n");
+  if (https.begin(*client, "https://onesignal.com/api/v1/notifications")) {  // HTTPS
+    https.addHeader("Content-Type", "application/json; charset=utf-8",true,false);
+    https.addHeader("Authorization", "Basic " + ONESIGNAL_API); // remove '<>' wheb typing api key
+    
+    
+    Serial.print("[HTTPS] POST...\n");
+    // start connection and send HTTP header
+    int httpCode = https.POST(json);
+
+    // httpCode will be negative on error
+    if (httpCode > 0) {
+      // HTTP header has been send and Server response header has been handled
+      Serial.printf("[HTTPS] POST... code: %d\n", httpCode);
+
+      // file found at server
+      // file found at server
+      if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+        String payload = https.getString();
+        Serial.println(payload);
+      }
+    } else {
+      Serial.printf("[HTTPS] POST... failed, error: %s\n", https.errorToString(httpCode).c_str());
+    }
+
+    https.end();
+  } else {
+    Serial.printf("[HTTPS] Unable to connect\n");
+  }
+
+
+  // End of HTTP Onesignal Request
 
   // Display Test
   if(!digitalRead(BUTTON_A)) display.print("A");

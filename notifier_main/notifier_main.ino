@@ -181,7 +181,8 @@ void setup(void) {
   display.setCursor(0,0);
   display.print("Connecting to SSID\n'adafruit':");
   display.print("connected!");
-  display.println("IP: 10.0.1.23");
+  display.print("IP: ");
+  display.println(WiFi.localIP());
   display.println("Sending val #0");
   display.display(); // actually display all of the above
 }
@@ -229,7 +230,7 @@ void loop(void) {
   } else {
     Serial.printf("[HTTPS] Unable to connect\n");
   }
-
+  Serial.println("Push Notification Attempt");
 
   // End of HTTP Onesignal Request
 
@@ -240,4 +241,5 @@ void loop(void) {
   delay(10);
   yield();
   display.display();
+  delay(5000);
 }

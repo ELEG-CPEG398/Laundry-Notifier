@@ -13,9 +13,18 @@
   These functions are generated with the Thing and added at the end of this sketch.
 */
 
+// Include for ArduinoIoT Cloud
 #include "thingProperties.h"
 
-#define BUTTON_A 0
+// Libraries for OLED
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SH110X.h>
+
+#define BUTTON_A  0
+#define BUTTON_B 16
+#define BUTTON_C  2
 
 void setup() {
   // Initialize serial and wait for port to open:
@@ -38,22 +47,64 @@ void setup() {
  */
   setDebugMessageLevel(2);
   ArduinoCloud.printDebugInfo();
+
+
+
+  // Set up OLED display
+  display.begin(0x3C, true); // Address 0x3C default
+  Serial.println("OLED Started");
+
+  // Show image buffer on the display hardware.
+  // Since the buffer is intialized with an Adafruit splashscreen
+  // internally, this will display the splashscreen.
+  display.display();
+  delay(1000);
+
+  // Clear the buffer.
+  display.clearDisplay();
+  display.display();
+
+  display.setRotation(1);
+  Serial.println("Button test");
+  
+  pinMode(BUTTON_A, INPUT_PULLUP);
+  pinMode(BUTTON_B, INPUT_PULLUP);
+  pinMode(BUTTON_C, INPUT_PULLUP);
+
+  // text display tests
+  display.setTextSize(1);
+  display.setTextColor(SH110X_WHITE);
+  display.setCursor(0,0);
+  display.print("Connecting to SSID\n'adafruit':");
+  display.print("connected!");
+  display.print("IP: ");
+  display.println(WiFi.localIP());
+  display.display(); // actually display all of the above
 }
 
 bool waitResponse = false;
+void printMessageFeed(String s){
+  message = 
+}
+
+String takeResponse(String prompt){
+  if(prompt != ""){
+    Serial.println(prompt);
+    message = prompt;
+    ArduinoCloud.update();
+  }
+  waitReponse = false;
+  while(waitResponse){ delay(100); }
+  Serial.println("Response from user: " + message); // debugging
+  waitResponse = false;
+  delay(1000);
+}
+
 void loop() {
   ArduinoCloud.update();
   // Your code here 
   if(!digitalRead(BUTTON_A)){
-    username = "What's your name?";
-    ArduinoCloud.update();
-    Serial.println(username);
-    while(waitResponse){ delay(100); }
-    username = "Hello " + username;
-    ArduinoCloud.update();
-    Serial.println(username);
-    waitResponse = false;
-    delay(1000);
+    takeReponse("What's your name?");
   }
   
 }
@@ -66,8 +117,13 @@ void loop() {
 */
 void onUsernameChange()  {
   // Add your code here to act upon Username change
-  Serial.println(username);
+  
+
+}
+
+void onMessageChange()  {
+  // Add your code here to act upon Message change
+  Serial.println(message);
   waitResponse = true;
   delay(100);
-
 }

@@ -25,7 +25,7 @@
 #define BUTTON_A  0
 #define BUTTON_B 16
 #define BUTTON_C  2
-
+Adafruit_SH1107 display = Adafruit_SH1107(64, 128, &Wire);
 void setup() {
   // Initialize serial and wait for port to open:
   Serial.begin(115200);
@@ -82,48 +82,36 @@ void setup() {
   display.display(); // actually display all of the above
 }
 
-bool waitResponse = false;
+string user;
+bool intakeResponse = false;
 void printMessageFeed(String s){
-  message = 
+  message = s;
 }
 
-String takeResponse(String prompt){
+void takeResponse(String prompt){
   if(prompt != ""){
     Serial.println(prompt);
-    message = prompt;
-    ArduinoCloud.update();
+    printMessageFeed(prompt);
   }
-  waitReponse = false;
-  while(waitResponse){ delay(100); }
-  Serial.println("Response from user: " + message); // debugging
-  waitResponse = false;
-  delay(1000);
+  intakeResponse = true;
+  delay(500);
 }
 
 void loop() {
   ArduinoCloud.update();
   // Your code here 
   if(!digitalRead(BUTTON_A)){
-    takeReponse("What's your name?");
+    takeResponse("What's your name?");
   }
   
 }
 
 
-
-/*
-  Since Username is READ_WRITE variable, onUsernameChange() is
-  executed every time a new value is received from IoT Cloud.
-*/
-void onUsernameChange()  {
-  // Add your code here to act upon Username change
-  
-
-}
-
 void onMessageChange()  {
   // Add your code here to act upon Message change
-  Serial.println(message);
-  waitResponse = true;
-  delay(100);
+  if(intakeResponse){
+    intakeResponse = false;
+    user = message;
+    Serial.println("Response from user: " + message); // debugging
+  }
 }

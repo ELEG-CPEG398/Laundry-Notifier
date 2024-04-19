@@ -2,6 +2,7 @@
 
 #include <ArduinoIoTCloud.h>
 #include <Arduino_ConnectionHandler.h>
+#include "secrets.h"
 
 const char DEVICE_LOGIN_NAME[]  = "b4aa7c3c-8038-4426-8fb4-0b5d56ab586c";
 
@@ -9,7 +10,7 @@ const char SSID[]               = SECRET_SSID;    // Network SSID (name)
 const char PASS[]               = SECRET_OPTIONAL_PASS;    // Network password (use for WPA, or use as key for WEP)
 const char DEVICE_KEY[]  = SECRET_DEVICE_KEY;    // Secret device password
 
-void onUsernameChange();
+void onMessageChange();
 
 bool isFinishedLoad;
 String message;

@@ -44,8 +44,9 @@ void setup() {
   setup_OLED();
 }
 
-String user;
+String user = "";
 bool intakeResponse = false;
+bool loadInProgress = false;
 void printMessageFeed(String s){
   message = s;
 }
@@ -62,11 +63,40 @@ void takeResponse(String prompt){
 void loop() {
   OLED_loop();
   ArduinoCloud.update();
-  // Your code here 
+  
+  switch(currentState){
+    case MAIN_MENU:
+      break;
+    case START_MENU: 
+      state_START_MENU();
+      break;
+    default:
+      Serial.println("Error: Undefined State");
+  }
+
   if(!digitalRead(BUTTON_A)){
     takeResponse("What's your name?");
   }
-  
+  delay(10);
+}
+
+void state_START_MENU(){
+  // Wait for load (Look for Vibrations)
+
+  // if load detected, display that a load is in progress
+  if(loadInProgress){
+    // If load isn't claimed, prompt a button to claim load
+    if(user == ""){
+      displayStartMenu(true,loadInProgress,""); // Parameters: isUnclaimed, loadInProgress
+      // Button sends user to finger print state
+    }
+    else{
+      displayStartMenu(true,loadInProgress,user);
+    }
+  }
+  else{ // Display "Waiting for Load"
+    displayStartMenu(false,loadInProgress,""); // Parameters: isUnclaimed, loadInProgress
+  }
 }
 
 
@@ -74,7 +104,7 @@ void onMessageChange()  {
   // Add your code here to act upon Message change
   if(intakeResponse){
     intakeResponse = false;
-    user = message;
+    user = message; // Save message to user's name
     Serial.println("Response from user: " + message); // debugging
   }
 }

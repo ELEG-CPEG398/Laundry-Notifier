@@ -25,7 +25,7 @@ void handleButtonA();
 void handleButtonB();
 void handleButtonC();
 void displayMainMenu();
-void displayStartMenu();
+void displayStartMenu(bool isUnclaimed, bool inProgress);
 void displayCalibrateMenu();
 void displaySettingsMenu();
 void displayRegisterMenu();
@@ -38,6 +38,9 @@ enum MenuState {
   REGISTER_MENU
 };
 
+// Global Variables
+MenuState currentState = MAIN_MENU;  // Track the current state
+MenuState previousState = MAIN_MENU; // Track the previous state for accurate back navigation
 Adafruit_SH1107 display = Adafruit_SH1107(64, 128, &Wire);
 
 #endif

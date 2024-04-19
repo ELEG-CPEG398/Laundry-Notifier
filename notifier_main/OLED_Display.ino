@@ -1,8 +1,5 @@
 #include "OLED_Display.h"
 
-MenuState currentState = MAIN_MENU;
-MenuState previousState = MAIN_MENU; // Track the previous state for accurate back navigation
-
 void setup_OLED() {
   Serial.begin(115200);
   
@@ -64,7 +61,7 @@ void handleButtonA() {
   switch (currentState) {
     case MAIN_MENU:
       currentState = START_MENU;
-      displayStartMenu();
+      displayStartMenu(false,false,"");
       break;
     case SETTINGS_MENU:
       currentState = CALIBRATE_MENU;
@@ -100,7 +97,7 @@ void handleButtonC() {
       displayMainMenu();
       break;
     case START_MENU:
-      displayStartMenu();
+      displayStartMenu(false,false,"");
       break;
     case SETTINGS_MENU:
       displaySettingsMenu();
@@ -129,14 +126,29 @@ void displayMainMenu() {
   display.display();
 }
 
-void displayStartMenu() {
+void displayStartMenu(bool isUnclaimed, bool inProgress, String username) {
   display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(SH110X_WHITE);
+
   display.setCursor(0, 0);
-  display.println("Start Menu");
-  display.setTextSize(1);
-  display.println("Press C to go back");
+  if(inProgress){
+    display.println("In Progress");
+    display.setTextSize(1);
+    if(isUnclaimed){
+      display.println("A: Claim Load");
+    }
+    else{
+      display.println("Owned by " + username);
+    }
+  }
+  else{
+    display.println("Waiting...");
+    display.setTextSize(1);
+  }
+
+  display.println("C: Back");
+
   display.display();
 }
 

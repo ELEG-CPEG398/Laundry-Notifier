@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "FeatherWing")(type "KiCad")(uri "${KIPRJMOD}")(options "")(descr "Basic Featherwing PCB for Adafruit Huzzah ESP8266"))
+)

@@ -55,6 +55,7 @@ void setup(void) {
 // Rms value of the acceleration
 void loop() {
   double sum = 0;
+  double sumSq = 0;
 
   // Declare Sensor event
   sensors_event_t accel;
@@ -69,27 +70,30 @@ void loop() {
                             (accel.acceleration.y * accel.acceleration.y) +
                             (accel.acceleration.z * accel.acceleration.z);
     sum += magnitude;
+    sumSq += magnitude * magnitude;
     
     delay(5);
   }
   
   // Calculate rms
-  double rms = sqrt(sum / SAMPLES);
+  double mean = sum / SAMPLES;
+  double variance = (sumSq / SAMPLES) - (mean * mean);
+  double stdDev = sqrt(variance);
 
   // Calibrate by setting threshold
   if(!digitalRead(BUTTON_A)){
     delay(2000);
-    THRESHOLD = rms * 1.1;
+    THRESHOLD = stdDev * 1.5;
   }
   
-  vibrating = rms > THRESHOLD;
+  vibrating = stdDev > THRESHOLD;
 
   //serial plotter friendly format
   Serial.print(accel.acceleration.x);
   Serial.print(","); Serial.print(accel.acceleration.y);
   Serial.print(","); Serial.print(accel.acceleration.z);
   Serial.print(","); Serial.print(THRESHOLD);
-  Serial.print(","); Serial.print(rms);
+  Serial.print(","); Serial.print(stdDev);
   Serial.print(","); Serial.println(vibrating);
 
   //delayMicroseconds(10000);

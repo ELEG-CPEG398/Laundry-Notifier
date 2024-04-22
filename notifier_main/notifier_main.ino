@@ -19,8 +19,8 @@
 void setup() {
   // Initialize serial and wait for port to open:
   Serial.begin(115200);
-  // This delay gives the chance to wait for a Serial Monitor without blocking if none is found
-  delay(1500); 
+  while (!Serial)
+    delay(10); // will pause Zero, Leonardo, etc until serial console opens
 
   // Defined in thingProperties.h
   initProperties();
@@ -82,6 +82,7 @@ void loop() {
 
 void state_START_MENU(){
   // Wait for load (Look for Vibrations)
+  detectVibration();
 
   // if load detected, display that a load is in progress
   if(loadInProgress){

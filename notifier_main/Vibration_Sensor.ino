@@ -29,14 +29,14 @@ void VibrationSensorSetup(void) {
 }
 
 // Detects vibrations by comparing the current standard deviation of the magnitude of acceleration to its "natural" state
-void detectVibration() {
+bool detectVibration(void) {
   // Declare Sensor event
   sensors_event_t accel;
   sensors_event_t gyro;
   sensors_event_t temp;
   
   // Collect sample data and average magnitude
-  for (int i = 0; i < SAMPLES; i++) {
+  //for (int i = 0; i < SAMPLES; i++) {
     ism330dhcx.getEvent(&accel, &gyro, &temp);
     
     double magnitude =      (accel.acceleration.x * accel.acceleration.x) +
@@ -45,19 +45,19 @@ void detectVibration() {
     sum += magnitude;
     sumSq += magnitude * magnitude;
     
-    delay(5); // Delay needed for sample rate of 416 Hz
-  }
+    //delay(5); // Delay needed for sample rate of 416 Hz
+  //}
   
   
 
   // Calibrate by setting threshold
-  if(!digitalRead(BUTTON_A)){
-    delay(2000);
-    THRESHOLD = stdDev * 1.5;
-  }
+  //if(!digitalRead(BUTTON_A)){
+    //delay(2000);
+    //THRESHOLD = stdDev * 1.5;
+  //}
   
   // Calculate standard deviation every (5ms) * (# of samples)
-  if((clock % SENSORDELAY) == 0){
+  if((clk % SENSORDELAY) == 0){
     return calculateStdDev();
   }
   else{

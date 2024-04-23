@@ -15,6 +15,12 @@
 // Import OLED
 #include "OLED_Display.h"
 
+// Import Vibration Sensor
+#include "Vibration_Sensor.h"
+
+// Constant Variables
+short booleanAverage = 0;
+short booleanSamples = 0;
 
 void setup() {
   // Initialize serial and wait for port to open:
@@ -77,12 +83,29 @@ void loop() {
   if(!digitalRead(BUTTON_A)){
     takeResponse("What's your name?");
   }
-  delay(10);
+  clk += 5;
+  if((clk % 5000) == 0)
+    clk = 0;
+  
+  delay(5);
 }
 
 void state_START_MENU(){
   // Wait for load (Look for Vibrations)
-  detectVibration();
+  booleanAverage += detectVibration();
+  booleanSamples ++;
+
+  // Wait 3 seconds before changing changing boolean value
+  if(loadInProgress && ((clk % 3000) == 0) && (booleanAverage/booleanSamples > 0.6)){
+    loadInProgress = true;
+    booleanAverage = 0;
+    booleanSamples = 0;
+  }
+  else if(((clk % 3000) == 0) && (booleanAverage/booleanSamples <= 0.6)){
+    loadInProgress = false;
+    booleanAverage = 0;
+    booleanSamples = 0;
+  }
 
   // if load detected, display that a load is in progress
   if(loadInProgress){

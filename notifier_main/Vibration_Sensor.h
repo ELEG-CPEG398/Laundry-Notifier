@@ -12,20 +12,20 @@
 
 // Constant variables
 const int SAMPLES = 64;
-const int SAMPLERATE = 5 // 5ms or ~416Hz 
+const int SAMPLERATE = 5; // 5ms or ~416Hz 
 const int SENSORDELAY  = SAMPLES * SAMPLERATE;
 
 // Global Variables
 bool isVibrating = false;
 float THRESHOLD = 9.68;  // 9.68 defaultt magnitude (offset gravity)
-int clock = 0;
+int clk = 0;
 double sum = 0;
 double sumSq = 0;
 Adafruit_ISM330DHCX ism330dhcx;
 
 // Function Declarations
 void VibrationSensorSetup(void);
-void detectVibration();
+bool detectVibration(void);
 
 
 #endif

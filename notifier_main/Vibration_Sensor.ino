@@ -12,7 +12,7 @@ void VibrationSensorSetup(void) {
   
   Serial.println("ISM330DHCX Found!");
 
-  //ism330dhcx.setAccelRange(LSM6DS_ACCEL_RANGE_4_G); // (+-4G Default)
+  ism330dhcx.setAccelRange(LSM6DS_ACCEL_RANGE_4_G); // (+-4G Default)
   Serial.print("Accelerometer range set to: +-4G");
 
   //ism330dhcx.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS); // (2000 degrees Default)
@@ -44,10 +44,8 @@ bool detectVibration(void) {
                             (accel.acceleration.z * accel.acceleration.z);
     sum += magnitude;
     sumSq += magnitude * magnitude;
-    
     //delay(5); // Delay needed for sample rate of 416 Hz
   //}
-  
   
 
   // Calibrate by setting threshold
@@ -68,14 +66,21 @@ bool detectVibration(void) {
 
 bool calculateStdDev(){
   // Calculate Standard Deviation
-  double mean = sum / SAMPLES;
-  double variance = (sumSq / SAMPLES) - (mean * mean);
+  double mean = sum / (float)SAMPLES;
+  double variance = (sumSq / (float)SAMPLES) - (mean * mean);
   double stdDev = sqrt(variance);
   sum = 0;
   sumSq = 0;
-  Serial.print(stdDev);
-  Serial.print(", ");
-  Serial.println(THRESHOLD);
+  
+  //Serial.print(stdDev);
+  //Serial.print(", ");
+  //Serial.println(THRESHOLD);
+ 
+  Serial.print(THRESHOLD);
+  Serial.print(","); Serial.print(stdDev);
+  Serial.print(","); Serial.print(test);
+  Serial.print(","); Serial.println(stdDev > THRESHOLD);
 
-  return  isVibrating = stdDev > THRESHOLD;
+
+  return  stdDev > THRESHOLD;
 }

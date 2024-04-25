@@ -19,7 +19,7 @@
 #include "Vibration_Sensor.h"
 
 // Constant Variables
-short booleanAverage = 0;
+short booleanSum = 0;
 short booleanSamples = 0;
 
 void setup() {
@@ -48,6 +48,9 @@ void setup() {
   
   // Set up OLED display
   setup_OLED();
+
+  // Set up Vibration Sensor
+  VibrationSensorSetup();
 }
 
 String user = "";
@@ -83,17 +86,17 @@ void loop() {
   if(!digitalRead(BUTTON_A)){
     takeResponse("What's your name?");
   }
-  clk += 5;
-  if((clk % 5000) == 0)
+  clk += SAMPLERATE;
+  if(clk > 32000)
     clk = 0;
   
-  delay(5);
+  delay(SAMPLERATE);
 }
 
 void state_START_MENU(){
   // Wait for load (Look for Vibrations)
   if((clk % SENSORDELAY) == 0){
-    booleanAverage += detectVibration();
+    booleanSum += detectVibration();
     booleanSamples ++;
   }
   else{
@@ -101,24 +104,24 @@ void state_START_MENU(){
   }
   
   
-  if(loadInProgress){
-    Serial.println("Load In Progress");
-  }
 
-  if ( (clk % 3200) == 0){
-    Serial.println((float)booleanAverage/booleanSamples);
+  if ( (clk % SENSORDELAY) == 0){
+    //Serial.println(((float)booleanSum)/((float)booleanSamples));
   }
 
   // Wait 3 seconds before changing changing boolean value
-  if(loadInProgress && ((clk % 3000) == 0) && (booleanAverage/booleanSamples > 0.6)){
-    loadInProgress = true;
-    booleanAverage = 0;
-    booleanSamples = 0;
-  }
-  else if(((clk % 3000) == 0) && (booleanAverage/booleanSamples <= 0.6)){
-    loadInProgress = false;
-    booleanAverage = 0;
-    booleanSamples = 0;
+  if((clk % 3000) == 0){
+    float booleanAverage = (float)booleanSum/((float)booleanSamples);
+    if(!loadInProgress  && ( booleanAverage >= 0.5)){
+      loadInProgress = true;
+      booleanSum = 0;
+      booleanSamples = 0;
+    }
+    else if(booleanAverage < 0.5){
+      loadInProgress = false;
+      booleanSum = 0;
+      booleanSamples = 0;
+    }
   }
 
   // if load detected, display that a load is in progress

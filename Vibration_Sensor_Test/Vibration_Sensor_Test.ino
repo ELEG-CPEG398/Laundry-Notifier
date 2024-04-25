@@ -14,7 +14,7 @@
 
 // Global Variables
 bool vibrating = false;
-float THRESHOLD = 9.68;
+float THRESHOLD = 0.5;
 int SAMPLES = 64;
 Adafruit_ISM330DHCX ism330dhcx;
 

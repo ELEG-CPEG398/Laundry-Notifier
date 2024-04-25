@@ -16,8 +16,8 @@ const int SAMPLERATE = 5; // 5ms or ~416Hz
 const int SENSORDELAY  = SAMPLES * SAMPLERATE;
 
 // Global Variables
-bool isVibrating = false;
-float THRESHOLD = 9.68;  // 9.68 defaultt magnitude (offset gravity)
+int test = 0;
+float THRESHOLD = 0.5;  // 0.01 default
 int clk = 0;
 double sum = 0;
 double sumSq = 0;

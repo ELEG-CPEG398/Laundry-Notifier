@@ -76,10 +76,9 @@ bool calculateStdDev(){
   //Serial.print(", ");
   //Serial.println(THRESHOLD);
  
-  Serial.print(THRESHOLD);
-  Serial.print(","); Serial.print(stdDev);
-  Serial.print(","); Serial.print(test);
-  Serial.print(","); Serial.println(stdDev > THRESHOLD);
+  //Serial.print(THRESHOLD);
+  //Serial.print(","); Serial.print(stdDev);
+  //Serial.print(","); Serial.println(stdDev > THRESHOLD);
 
 
   return  stdDev > THRESHOLD;

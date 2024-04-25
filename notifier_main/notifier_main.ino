@@ -19,8 +19,15 @@
 #include "Vibration_Sensor.h"
 
 // Constant Variables
+const short MINIMUMLOADCYCLETIME = 60; // (Default: 60 seconds)
+
+// Global Variables
 short booleanSum = 0;
 short booleanSamples = 0;
+short loadTime = 0;
+String user = "";
+bool intakeResponse = false;
+bool loadInProgress = false;
 
 void setup() {
   // Initialize serial and wait for port to open:
@@ -53,9 +60,7 @@ void setup() {
   VibrationSensorSetup();
 }
 
-String user = "";
-bool intakeResponse = false;
-bool loadInProgress = false;
+
 void printMessageFeed(String s){
   message = s;
 }
@@ -89,6 +94,9 @@ void loop() {
   clk += SAMPLERATE;
   if(clk > 32000)
     clk = 0;
+
+  
+
   
   delay(SAMPLERATE);
 }
@@ -103,22 +111,35 @@ void state_START_MENU(){
     detectVibration();
   }
   
+ 
+  if(clk % 1000)
+    loadTime++;
   
 
+
   if ( (clk % SENSORDELAY) == 0){
-    //Serial.println(((float)booleanSum)/((float)booleanSamples));
+    Serial.println(((float)booleanSum)/((float)booleanSamples));
   }
 
-  // Wait 3 seconds before changing changing boolean value
-  if((clk % 3000) == 0){
+  // Wait 1 second before attempting to change boolean value
+  if((clk % 1000) == 0){
     float booleanAverage = (float)booleanSum/((float)booleanSamples);
+    // If a load isn't in progress (false) and the sensor is detecting vibrations (booleanAverage is true), set loadInProgress to true
     if(!loadInProgress  && ( booleanAverage >= 0.5)){
       loadInProgress = true;
       booleanSum = 0;
       booleanSamples = 0;
+      isFinishedLoad = false;
     }
+    // If a load is in progress and the sensor is not detecting vibration (booleanAverage is false), set loadInProgress to false
     else if(booleanAverage < 0.5){
       loadInProgress = false;
+      booleanSum = 0;
+      booleanSamples = 0;
+      isFinishedLoad = loadTime > MINIMUMLOADCYCLETIME;
+    }
+    // if a load is in progress and the sensor continues to detect vibrations (booleanAverage is true), reset the booleanAverage
+    else{
       booleanSum = 0;
       booleanSamples = 0;
     }

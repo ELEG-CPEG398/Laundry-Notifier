@@ -17,7 +17,7 @@ const int SENSORDELAY  = SAMPLES * SAMPLERATE;
 
 // Global Variables
 int test = 0;
-float THRESHOLD = 0.5;  // 0.01 default
+float THRESHOLD = 1.0;  // 0.01 default
 int clk = 0;
 double sum = 0;
 double sumSq = 0;

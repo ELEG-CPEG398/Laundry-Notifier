@@ -133,7 +133,7 @@ void displayStartMenu(bool isUnclaimed, bool inProgress, String username) {
 
   display.setCursor(0, 0);
   if(inProgress){
-    display.println("In Progress");
+    display.println("Ongoing");
     display.setTextSize(1);
     if(isUnclaimed){
       display.println("A: Claim Load");

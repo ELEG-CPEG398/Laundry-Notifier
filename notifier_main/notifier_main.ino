@@ -92,8 +92,22 @@ void loop() {
 
 void state_START_MENU(){
   // Wait for load (Look for Vibrations)
-  booleanAverage += detectVibration();
-  booleanSamples ++;
+  if((clk % SENSORDELAY) == 0){
+    booleanAverage += detectVibration();
+    booleanSamples ++;
+  }
+  else{
+    detectVibration();
+  }
+  
+  
+  if(loadInProgress){
+    Serial.println("Load In Progress");
+  }
+
+  if ( (clk % 3200) == 0){
+    Serial.println((float)booleanAverage/booleanSamples);
+  }
 
   // Wait 3 seconds before changing changing boolean value
   if(loadInProgress && ((clk % 3000) == 0) && (booleanAverage/booleanSamples > 0.6)){

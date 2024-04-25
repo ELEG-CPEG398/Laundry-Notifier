@@ -71,6 +71,11 @@ bool calculateStdDev(){
   double mean = sum / SAMPLES;
   double variance = (sumSq / SAMPLES) - (mean * mean);
   double stdDev = sqrt(variance);
+  sum = 0;
+  sumSq = 0;
+  Serial.print(stdDev);
+  Serial.print(", ");
+  Serial.println(THRESHOLD);
 
   return  isVibrating = stdDev > THRESHOLD;
 }

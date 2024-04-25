@@ -18,6 +18,8 @@
 // Import Vibration Sensor
 #include "Vibration_Sensor.h"
 
+#include <Adafruit_Fingerprint.h>
+
 // Constant Variables
 const short MINIMUMLOADCYCLETIME = 60; // (Default: 60 seconds)
 
@@ -84,13 +86,16 @@ void loop() {
     case START_MENU: 
       state_START_MENU();
       break;
+    case CALIBRATE_MENU:
+      state_CALIBRATE_MENU();
+      break;
     default:
       Serial.println("Error: Undefined State");
   }
 
-  if(!digitalRead(BUTTON_A)){
-    takeResponse("What's your name?");
-  }
+  //if(!digitalRead(BUTTON_A)){
+    //takeResponse("What's your name?");
+  //}
   clk += SAMPLERATE;
   if(clk > 32000)
     clk = 0;
@@ -114,8 +119,6 @@ void state_START_MENU(){
  
   if(clk % 1000)
     loadTime++;
-  
-
 
   if ( (clk % SENSORDELAY) == 0){
     Serial.println(((float)booleanSum)/((float)booleanSamples));
@@ -161,6 +164,17 @@ void state_START_MENU(){
   }
 }
 
+void state_CALIBRATE_MENU(){
+  if(!digitalRead(BUTTON_B)){
+    displayCalibrateMenu(true);
+    delay(3000);  // Wait 3 seconds
+    calibrateSensor();
+    displayCalibrateMenu(false);
+  }
+  else{
+    displayCalibrateMenu(false);
+  }
+}
 
 void onMessageChange()  {
   // Add your code here to act upon Message change

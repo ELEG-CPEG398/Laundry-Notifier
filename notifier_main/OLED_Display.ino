@@ -65,7 +65,11 @@ void handleButtonA() {
       break;
     case SETTINGS_MENU:
       currentState = CALIBRATE_MENU;
-      displayCalibrateMenu();
+      displayCalibrateMenu(false);
+      break;
+    case CALIBRATE_MENU:
+      THRESHOLD = 1.0; // Reset to default value
+      Serial.println("Threshold value reset");
       break;
     default:
       break;
@@ -103,7 +107,7 @@ void handleButtonC() {
       displaySettingsMenu();
       break;
     case CALIBRATE_MENU:
-      displayCalibrateMenu();
+      displayCalibrateMenu(false);
       break;
     case REGISTER_MENU:
       displayRegisterMenu();
@@ -152,15 +156,30 @@ void displayStartMenu(bool isUnclaimed, bool inProgress, String username) {
   display.display();
 }
 
-void displayCalibrateMenu() {
-  display.clearDisplay();
-  display.setTextSize(2);
-  display.setTextColor(SH110X_WHITE);
-  display.setCursor(0, 0);
-  display.println("Calibrate");
-  display.setTextSize(1);
-  display.println("Press C to go back");
-  display.display();
+bool displayCalibrateMenu(bool calibrateDevice) {
+  if(calibrateDevice){
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SH110X_WHITE);
+    display.setCursor(3, 0);
+    display.println("Calibrating. . .");
+    display.display();
+  }else{
+    display.clearDisplay();
+    display.setTextSize(2);
+    display.setTextColor(SH110X_WHITE);
+    display.setCursor(0, 0);
+    display.println("Calibrate");
+    display.setTextSize(1);
+    display.print("Detect Level: ");
+    display.println(THRESHOLD);
+    display.println("Press A to reset");
+    display.println("Press B to calibrate");
+    display.println("Press C to go back");
+    display.display();
+  }
+
+  return calibrateDevice;
 }
 
 void displaySettingsMenu() {

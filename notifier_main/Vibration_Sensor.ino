@@ -28,6 +28,36 @@ void VibrationSensorSetup(void) {
   ism330dhcx.configInt2(false, true, false); // gyro DRDY on INT2
 }
 
+void calibrateSensor(){
+  // Declare Sensor event
+  sensors_event_t accel;
+  sensors_event_t gyro;
+  sensors_event_t temp;
+  double s = 0;
+  double s_sq = 0;
+  
+  // Collect sample data and average magnitude
+  for (int i = 0; i < (SAMPLES); i++) {
+    ism330dhcx.getEvent(&accel, &gyro, &temp);
+    
+    double magnitude =      (accel.acceleration.x * accel.acceleration.x) +
+                            (accel.acceleration.y * accel.acceleration.y) +
+                            (accel.acceleration.z * accel.acceleration.z);
+    s += magnitude;
+    s_sq += magnitude * magnitude;
+    delay(SAMPLERATE); // Delay needed for sample rate of 416 Hz
+  }
+
+  // Calculate Standard Deviation
+  double mean = sum / ((float)(SAMPLES));
+  double variance = (s_sq / ((float)(SAMPLES))) - (mean * mean);
+  double stdDev = sqrt(variance);
+
+  THRESHOLD = stdDev;
+  Serial.print("Threshold value change to: ");
+  Serial.println(THRESHOLD);
+}
+
 // Detects vibrations by comparing the current standard deviation of the magnitude of acceleration to its "natural" state
 bool detectVibration(void) {
   // Declare Sensor event

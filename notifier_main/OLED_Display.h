@@ -26,7 +26,7 @@ void handleButtonB();
 void handleButtonC();
 void displayMainMenu();
 void displayStartMenu(bool isUnclaimed, bool inProgress);
-void displayCalibrateMenu();
+bool displayCalibrateMenu(bool calibrateDevice);
 void displaySettingsMenu();
 void displayRegisterMenu();
 

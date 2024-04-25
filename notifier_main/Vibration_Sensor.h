@@ -26,6 +26,7 @@ Adafruit_ISM330DHCX ism330dhcx;
 // Function Declarations
 void VibrationSensorSetup(void);
 bool detectVibration(void);
+void calibrateSensor(void);
 
 
 #endif

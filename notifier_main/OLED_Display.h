@@ -34,6 +34,7 @@ void displayStartMenu(bool isUnclaimed, bool inProgress);
 bool displayCalibrateMenu(bool calibrateDevice);
 void displaySettingsMenu();
 void displayRegisterMenu();
+void displayFingerPrintMenu(bool isRegistering);
 void error_found(errorCodes e);
 
 enum MenuState {
@@ -42,6 +43,7 @@ enum MenuState {
   SETTINGS_MENU,
   CALIBRATE_MENU,
   REGISTER_MENU,
+  FINGERPRINT_MENU,
   ERROR_MENU
 };
 

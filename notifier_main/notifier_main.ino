@@ -105,6 +105,8 @@ void loop() {
       break;
     case REGISTER_MENU:
       break;
+    case FINGERPRINT_MENU:
+      break;
     default:
       Serial.println("Error: Undefined State");
   }
@@ -132,6 +134,7 @@ void state_START_MENU(){
     detectVibration();
   }
   
+  /*
   if(user == ""){
     uint8_t fp = getFingerprintID();
     if(fp == FINGERPRINT_OK){
@@ -141,6 +144,7 @@ void state_START_MENU(){
       Serial.println("User: " + user);
     }
   }
+  */
   
  
   if ( (clk % SENSORDELAY) == 0){

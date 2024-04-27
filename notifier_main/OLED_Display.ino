@@ -59,7 +59,9 @@ void handleButtonA() {
       displayStartMenu(false,false,"");
       break;
     case START_MENU:
-      user = "";
+      //user = "";
+      currentState = FINGERPRINT_MENU;
+      displayFingerPrintMenu(false);
       break;
     case SETTINGS_MENU:
       currentState = CALIBRATE_MENU;
@@ -110,6 +112,8 @@ void handleButtonC() {
     case REGISTER_MENU:
       displayRegisterMenu();
       break;
+    case FINGERPRINT_MENU:
+
     default:
       displayMainMenu(); // Default to main menu if state is unknown
       break;
@@ -144,11 +148,11 @@ void displayStartMenu(bool isUnclaimed, bool inProgress, String username) {
   }
 
   if(isUnclaimed){
-    display.println("Place finger to claim load");
+    display.println("A: Claim Ownership");
   }
   else{
     display.println("Owned by " + user);
-    display.println("A: Reset Ownership");
+    display.println("A: Change Ownership");
   }
 
   display.println("C: Back");
@@ -204,6 +208,35 @@ void displayRegisterMenu() {
   display.setTextSize(1);
   display.println("Press C to go back");
   display.display();
+}
+
+void displayFingerPrintMenu(bool isRegistering){
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SH110X_WHITE);
+  display.setCursor(0, 0);
+  display.println("Place finger on the scanner");
+  display.println("C: Back");
+  display.display();
+  if(isRegistering){
+
+  }
+  else{
+    if(getFingerprintID() == FINGERPRINT_OK){
+      int i = finger.fingerID;
+      user =  i;
+      Serial.println(i);
+      Serial.println("User: " + user);
+      currentState = previousState;
+      previousState = MAIN_MENU;
+      
+    }
+    delay(5);
+    //int timeout = 0;
+    //for(int timeout = 0; getFingerprintID() != FINGERPRINT_OK && timeout < 5000; timeout += 5){ 
+      //delay(5); 
+    //}
+  }
 }
 
 void error_found(errorCodes e){

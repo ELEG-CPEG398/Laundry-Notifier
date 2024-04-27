@@ -205,3 +205,25 @@ void displayRegisterMenu() {
   display.println("Press C to go back");
   display.display();
 }
+
+void error_found(errorCodes e){
+  Serial.println("Error: Closing Program");
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SH110X_WHITE);
+  display.setCursor(3, 0);
+  switch (e) {
+    case VIBRATIONSENSOR_FAILED:
+      display.println("Failed to find \nvibration sensor");
+      break;
+    case FINGERPRINT_FAILED:
+      display.println("Failed to find \nfingerprint sensor");
+      break;
+    default:
+      display.println("Unknown Error");
+      break;
+  }
+
+  display.display();
+  while(true){delay(10);}
+}

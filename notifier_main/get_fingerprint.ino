@@ -12,7 +12,7 @@ bool get_fingerprint_setup()
     Serial.println("Did not find fingerprint sensor :(");
     return true;
   }
-
+  
   Serial.println(F("Reading sensor parameters"));
   finger.getParameters();
   Serial.print(F("Status: 0x")); Serial.println(finger.status_reg, HEX);
@@ -55,6 +55,7 @@ uint8_t getFingerprintID() {
   p = finger.fingerSearch();
   if (p == FINGERPRINT_OK) {
     Serial.println("Found a print match!");
+    return p;
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
     Serial.println("Communication error");
     return p;

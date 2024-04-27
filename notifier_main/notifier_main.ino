@@ -23,10 +23,7 @@
 
 // Constant Variables
 const unsigned long MINIMUMLOADCYCLETIME = 60000; // (Default: 60 seconds)
-enum errorCodes {
-  VIBRATIONSENSOR_FAILED,
-  FINGERPRINT_FAILED
-};
+
 
 // Global Variables
 short booleanSum = 0;
@@ -76,26 +73,7 @@ void setup() {
   Serial.println("Setup for Fingerprint Sensor Complete");
 }
 
-void error_found(errorCodes e){
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SH110X_WHITE);
-  display.setCursor(3, 0);
-  switch (e) {
-    case VIBRATIONSENSOR_FAILED:
-      display.println("Failed to find vibration sensor");
-      break;
-    case FINGERPRINT_FAILED:
-      display.println("Failed to find fingerprint sensor");
-      break;
-    default:
-      display.println("Unknown Error");
-      break;
-  }
 
-  display.display();
-  while(true){delay(10);}
-}
 
 void printMessageFeed(String s){
   message = s;
@@ -157,7 +135,7 @@ void state_START_MENU(){
   if(user == ""){
     uint8_t fp = getFingerprintID();
     if(fp == FINGERPRINT_OK){
-      user = "" + finger.fingerID;
+      user =  sscanf(finger.fingerID);
       Serial.println("User: " + user);
     }
   }

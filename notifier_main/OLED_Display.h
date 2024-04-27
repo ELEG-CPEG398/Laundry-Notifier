@@ -17,6 +17,11 @@
   #define BUTTON_C 14
 #endif
 
+enum errorCodes {
+  VIBRATIONSENSOR_FAILED,
+  FINGERPRINT_FAILED
+};
+
 // Function declarations for displaying different menus
 void setup_OLED();
 void OLED_loop();
@@ -29,6 +34,7 @@ void displayStartMenu(bool isUnclaimed, bool inProgress);
 bool displayCalibrateMenu(bool calibrateDevice);
 void displaySettingsMenu();
 void displayRegisterMenu();
+void error_found(errorCodes e);
 
 enum MenuState {
   MAIN_MENU,

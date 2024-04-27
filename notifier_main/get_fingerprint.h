@@ -8,7 +8,7 @@
 // pin #2 is IN from sensor (GREEN wire)
 // pin #3 is OUT from arduino  (WHITE wire)
 // Set up the serial port to use softwareserial..
-  SoftwareSerial mySerial(4, 5);
+  SoftwareSerial mySerial(14, 12);
 #else
 // On Leonardo/M0/etc, others with hardware serial, use hardware serial!
 // #0 is green wire, #1 is white

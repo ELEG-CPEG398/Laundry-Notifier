@@ -147,7 +147,7 @@ void displayStartMenu(bool isUnclaimed, bool inProgress, String username) {
     display.println("Place finger to claim load");
   }
   else{
-    display.println("Owned by " + username);
+    display.println("Owned by " + user);
     display.println("A: Reset Ownership");
   }
 

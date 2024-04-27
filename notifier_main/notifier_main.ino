@@ -135,7 +135,9 @@ void state_START_MENU(){
   if(user == ""){
     uint8_t fp = getFingerprintID();
     if(fp == FINGERPRINT_OK){
-      user =  sscanf(finger.fingerID);
+      int i = finger.fingerID;
+      user =  i;
+      Serial.println(i);
       Serial.println("User: " + user);
     }
   }
@@ -183,7 +185,7 @@ void state_START_MENU(){
       // Button sends user to finger print state
     }
     else{
-      displayStartMenu(true,loadInProgress,user);
+      displayStartMenu(false,loadInProgress,user);
     }
   }
   else{ // Display "Waiting for Load"

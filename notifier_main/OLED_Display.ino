@@ -1,9 +1,6 @@
 #include "OLED_Display.h"
 
 void setup_OLED() {
-  Serial.begin(115200);
-  
-  delay(250);
   display.begin(0x3C, true); // Initialize the display
 
   Serial.println("OLED begun");
@@ -16,8 +13,6 @@ void setup_OLED() {
   pinMode(BUTTON_A, INPUT_PULLUP);
   pinMode(BUTTON_B, INPUT_PULLUP);
   pinMode(BUTTON_C, INPUT_PULLUP);
-  Serial.println("Setup for 128x64 OLED FeatherWing Complete");
-
   displayMainMenu(); // Display the main menu initially
 }
 
@@ -62,6 +57,9 @@ void handleButtonA() {
     case MAIN_MENU:
       currentState = START_MENU;
       displayStartMenu(false,false,"");
+      break;
+    case START_MENU:
+      user = "";
       break;
     case SETTINGS_MENU:
       currentState = CALIBRATE_MENU;
@@ -139,16 +137,18 @@ void displayStartMenu(bool isUnclaimed, bool inProgress, String username) {
   if(inProgress){
     display.println("Ongoing");
     display.setTextSize(1);
-    if(isUnclaimed){
-      display.println("A: Claim Load");
-    }
-    else{
-      display.println("Owned by " + username);
-    }
   }
   else{
     display.println("Waiting...");
     display.setTextSize(1);
+  }
+
+  if(isUnclaimed){
+    display.println("Place finger to claim load");
+  }
+  else{
+    display.println("Owned by " + username);
+    display.println("A: Reset Ownership");
   }
 
   display.println("C: Back");

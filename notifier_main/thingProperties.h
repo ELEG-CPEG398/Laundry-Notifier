@@ -14,6 +14,7 @@ void onMessageChange();
 
 bool isFinishedLoad;
 String message;
+String user = "";
 
 void initProperties(){
 
@@ -21,6 +22,7 @@ void initProperties(){
   ArduinoCloud.setSecretDeviceKey(DEVICE_KEY);
   ArduinoCloud.addProperty(message, READWRITE, ON_CHANGE, onMessageChange);
   ArduinoCloud.addProperty(isFinishedLoad, READ, ON_CHANGE, NULL);
+  ArduinoCloud.addProperty(user, READ, ON_CHANGE, NULL);
 
 }
 

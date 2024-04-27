@@ -1,47 +1,8 @@
-/***************************************************
-  This is an example sketch for our optical Fingerprint sensor
-
-  Designed specifically to work with the Adafruit BMP085 Breakout
-  ----> http://www.adafruit.com/products/751
-
-  These displays use TTL Serial to communicate, 2 pins are required to
-  interface
-  Adafruit invests time and resources providing this open source code,
-  please support Adafruit and open-source hardware by purchasing
-  products from Adafruit!
-
-  Written by Limor Fried/Ladyada for Adafruit Industries.
-  BSD license, all text above must be included in any redistribution
- ****************************************************/
+#include "get_fingerprint.h"
 
 
-#include <Adafruit_Fingerprint.h>
-
-
-#if (defined(__AVR__) || defined(ESP8266)) && !defined(__AVR_ATmega2560__)
-// For UNO and others without hardware serial, we must use software serial...
-// pin #2 is IN from sensor (GREEN wire)
-// pin #3 is OUT from arduino  (WHITE wire)
-// Set up the serial port to use softwareserial..
-SoftwareSerial mySerial(4, 5);
-
-#else
-// On Leonardo/M0/etc, others with hardware serial, use hardware serial!
-// #0 is green wire, #1 is white
-#define mySerial Serial1
-
-#endif
-
-
-Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
-
-void setup()
+bool get_fingerprint_setup()
 {
-  Serial.begin(115200);
-  while (!Serial);  // For Yun/Leo/Micro/Zero/...
-  delay(100);
-  Serial.println("\n\nAdafruit finger detect test");
-
   // set the data rate for the sensor serial port
   finger.begin(57600);
   delay(5);
@@ -49,7 +10,7 @@ void setup()
     Serial.println("Found fingerprint sensor!");
   } else {
     Serial.println("Did not find fingerprint sensor :(");
-    while (1) { delay(1); }
+    return true;
   }
 
   Serial.println(F("Reading sensor parameters"));
@@ -71,14 +32,12 @@ void setup()
     Serial.println("Waiting for valid finger...");
       Serial.print("Sensor contains "); Serial.print(finger.templateCount); Serial.println(" templates");
   }
+
+  return false;
 }
 
-void loop()                     // run over and over again
-{
-  getFingerprintID();
-  delay(50);            //don't ned to run this at full speed.
-}
 
+// Loop this to search for fingerprint ID
 uint8_t getFingerprintID() {
   uint8_t p = -1;
   while (p != FINGERPRINT_OK) {

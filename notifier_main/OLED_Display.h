@@ -35,7 +35,8 @@ enum MenuState {
   START_MENU,
   SETTINGS_MENU,
   CALIBRATE_MENU,
-  REGISTER_MENU
+  REGISTER_MENU,
+  ERROR_MENU
 };
 
 // Global Variables

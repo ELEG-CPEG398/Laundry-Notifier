@@ -24,7 +24,7 @@ double sumSq = 0;
 Adafruit_ISM330DHCX ism330dhcx;
 
 // Function Declarations
-void VibrationSensorSetup(void);
+bool VibrationSensorSetup(void);
 bool detectVibration(void);
 void calibrateSensor(void);
 

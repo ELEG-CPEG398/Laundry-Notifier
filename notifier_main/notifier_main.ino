@@ -18,18 +18,22 @@
 // Import Vibration Sensor
 #include "Vibration_Sensor.h"
 
-#include <Adafruit_Fingerprint.h>
+// Import Get Fingerprint Function
+#include "get_fingerprint.h"
 
 // Constant Variables
-const short MINIMUMLOADCYCLETIME = 60; // (Default: 60 seconds)
+const unsigned long MINIMUMLOADCYCLETIME = 60000; // (Default: 60 seconds)
+enum errorCodes {
+  VIBRATIONSENSOR_FAILED,
+  FINGERPRINT_FAILED
+};
 
 // Global Variables
 short booleanSum = 0;
 short booleanSamples = 0;
-short loadTime = 0;
-String user = "";
 bool intakeResponse = false;
 bool loadInProgress = false;
+unsigned long startTime = millis();
 
 void setup() {
   // Initialize serial and wait for port to open:
@@ -57,11 +61,41 @@ void setup() {
   
   // Set up OLED display
   setup_OLED();
+  Serial.println("Setup for 128x64 OLED FeatherWing Complete");
 
   // Set up Vibration Sensor
-  VibrationSensorSetup();
+  if(VibrationSensorSetup()){
+    error_found(VIBRATIONSENSOR_FAILED);
+  }
+  Serial.println("Setup for Vibration Sensor Complete");
+
+  // Set up Fingerprint Sensor
+  if(get_fingerprint_setup()){
+    error_found(FINGERPRINT_FAILED);
+  }
+  Serial.println("Setup for Fingerprint Sensor Complete");
 }
 
+void error_found(errorCodes e){
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SH110X_WHITE);
+  display.setCursor(3, 0);
+  switch (e) {
+    case VIBRATIONSENSOR_FAILED:
+      display.println("Failed to find vibration sensor");
+      break;
+    case FINGERPRINT_FAILED:
+      display.println("Failed to find fingerprint sensor");
+      break;
+    default:
+      display.println("Unknown Error");
+      break;
+  }
+
+  display.display();
+  while(true){delay(10);}
+}
 
 void printMessageFeed(String s){
   message = s;
@@ -88,6 +122,10 @@ void loop() {
       break;
     case CALIBRATE_MENU:
       state_CALIBRATE_MENU();
+      break;
+    case SETTINGS_MENU:
+      break;
+    case REGISTER_MENU:
       break;
     default:
       Serial.println("Error: Undefined State");
@@ -116,10 +154,15 @@ void state_START_MENU(){
     detectVibration();
   }
   
+  if(user == ""){
+    uint8_t fp = getFingerprintID();
+    if(fp == FINGERPRINT_OK){
+      user = "" + finger.fingerID;
+      Serial.println("User: " + user);
+    }
+  }
+  
  
-  if(clk % 1000)
-    loadTime++;
-
   if ( (clk % SENSORDELAY) == 0){
     Serial.println(((float)booleanSum)/((float)booleanSamples));
   }
@@ -133,13 +176,19 @@ void state_START_MENU(){
       booleanSum = 0;
       booleanSamples = 0;
       isFinishedLoad = false;
+      startTime = millis(); // Start timing load cycle
     }
     // If a load is in progress and the sensor is not detecting vibration (booleanAverage is false), set loadInProgress to false
     else if(booleanAverage < 0.5){
       loadInProgress = false;
       booleanSum = 0;
       booleanSamples = 0;
-      isFinishedLoad = loadTime > MINIMUMLOADCYCLETIME;
+      // If load cycle has been ongoing for a minimum amount of time, assume a load has finished
+      if((millis()-startTime) > MINIMUMLOADCYCLETIME){
+        isFinishedLoad = true;
+        user = "";
+      }
+      
     }
     // if a load is in progress and the sensor continues to detect vibrations (booleanAverage is true), reset the booleanAverage
     else{

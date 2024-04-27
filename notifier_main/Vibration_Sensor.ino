@@ -49,7 +49,7 @@ void calibrateSensor(){
   }
 
   // Calculate Standard Deviation
-  double mean = sum / ((float)(SAMPLES));
+  double mean = s / ((float)(SAMPLES));
   double variance = (s_sq / ((float)(SAMPLES))) - (mean * mean);
   double stdDev = sqrt(variance);
 

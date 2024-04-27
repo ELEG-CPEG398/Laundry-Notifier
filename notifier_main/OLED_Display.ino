@@ -173,7 +173,7 @@ bool displayCalibrateMenu(bool calibrateDevice) {
     display.setTextSize(1);
     display.print("Detect Level: ");
     display.println(THRESHOLD);
-    display.println("Press A to reset");
+    display.println("\nPress A to reset");
     display.println("Press B to calibrate");
     display.println("Press C to go back");
     display.display();

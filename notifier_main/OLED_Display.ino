@@ -18,6 +18,13 @@ void setup_OLED() {
 
 void OLED_loop() {
   handleButtons(); // Handle button presses
+  if (displayNeedsUpdate) {
+    switch (currentState) {
+      case MAIN_MENU:
+        displayMainMenu();
+        break;
+    }
+  }
 }
 
 void handleButtons() {
@@ -57,6 +64,7 @@ void handleButtonA() {
     case MAIN_MENU:
       currentState = START_MENU;
       displayStartMenu(false,false,"");
+      displayNeedsUpdate = true;  // Set the flag to update the display
       break;
     case START_MENU:
       //user = "";
@@ -121,6 +129,8 @@ void handleButtonC() {
 }
 
 void displayMainMenu() {
+  if (!displayNeedsUpdate) return; 
+  
   display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(SH110X_WHITE);
@@ -130,6 +140,7 @@ void displayMainMenu() {
   display.println("A: Start");
   display.println("B: Settings");
   display.display();
+  displayNeedsUpdate = false;
 }
 
 void displayStartMenu(bool isUnclaimed, bool inProgress, String username) {

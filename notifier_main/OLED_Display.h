@@ -36,6 +36,7 @@ void displaySettingsMenu();
 void displayRegisterMenu();
 void displayFingerPrintMenu(bool isRegistering);
 void error_found(errorCodes e);
+bool displayNeedsUpdate = true;
 
 enum MenuState {
   MAIN_MENU,

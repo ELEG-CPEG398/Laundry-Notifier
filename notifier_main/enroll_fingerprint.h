@@ -17,12 +17,10 @@
 
 // Global Variables
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
-uint8_t id = finger.getTemplateCount();
 
 // Function Definitions
 bool get_fingerprint_setup(void);
 uint8_t getFingerprintID(void);   
 int getFingerprintIDez(void);
-uint8_t getFingerprintEnroll(String username);
 
 #endif

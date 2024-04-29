@@ -24,7 +24,7 @@
 // pin #2 is IN from sensor (GREEN wire)
 // pin #3 is OUT from arduino  (WHITE wire)
 // Set up the serial port to use softwareserial..
-SoftwareSerial mySerial(4, 5);  // ESP8226 uses 4 (Yellow),5 (White)
+SoftwareSerial mySerial(14, 12);  // ESP8226 uses 14 (Yellow), 12 (White)
 
 #else
 // On Leonardo/M0/etc, others with hardware serial, use hardware serial!
@@ -40,7 +40,7 @@ uint8_t id;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial);  // For Yun/Leo/Micro/Zero/...
   delay(100);
   Serial.println("\n\nAdafruit Fingerprint sensor enrollment");

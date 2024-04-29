@@ -79,6 +79,8 @@ void handleButtonA() {
       THRESHOLD = 1.0; // Reset to default value
       Serial.println("Threshold value reset");
       break;
+    case REGISTER_MENU:
+      displayFingerPrintMenu(true);
     default:
       break;
   }
@@ -217,22 +219,31 @@ void displayRegisterMenu() {
   display.setCursor(0, 0);
   display.println("Register");
   display.setTextSize(1);
-  display.println("Press C to go back");
+  display.println("A: Begin Registering");
+  display.println("B: Remove all Users");
+  display.println("C: Back");
   display.display();
 }
 
 void displayFingerPrintMenu(bool isRegistering){
   display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SH110X_WHITE);
-  display.setCursor(0, 0);
-  display.println("Scan Fingerprint");
-  display.println("C: Back");
-  display.display();
   if(isRegistering){
-
+    takeResponse("Please enter name");
+    display.setTextSize(1);
+    display.setTextColor(SH110X_WHITE);
+    display.setCursor(0, 0);
+    getFingerprintEnroll(user);
+    currentState = SETTINGS_MENU;
+    previousState = MAIN_MENU;
+    displaySettingsMenu();
   }
   else{
+    display.setTextSize(1);
+    display.setTextColor(SH110X_WHITE);
+    display.setCursor(0, 0);
+    display.println("Scan Fingerprint");
+    display.println("C: Back");
+    display.display();
     if(getFingerprintID() == FINGERPRINT_OK){
       int i = finger.fingerID;
       user =  i;

@@ -107,6 +107,7 @@ void handleButtonC() {
   switch (currentState) {
     case MAIN_MENU:
       displayMainMenu();
+      displayNeedsUpdate = true;  // Set the flag to update the display
       break;
     case START_MENU:
       displayStartMenu(false,false,"");
@@ -120,10 +121,9 @@ void handleButtonC() {
     case REGISTER_MENU:
       displayRegisterMenu();
       break;
-    case FINGERPRINT_MENU:
-
     default:
       displayMainMenu(); // Default to main menu if state is unknown
+      displayNeedsUpdate = true;  // Set the flag to update the display
       break;
   }
 }
@@ -226,7 +226,7 @@ void displayFingerPrintMenu(bool isRegistering){
   display.setTextSize(1);
   display.setTextColor(SH110X_WHITE);
   display.setCursor(0, 0);
-  display.println("Place finger on the scanner");
+  display.println("Scan Fingerprint");
   display.println("C: Back");
   display.display();
   if(isRegistering){
@@ -240,7 +240,20 @@ void displayFingerPrintMenu(bool isRegistering){
       Serial.println("User: " + user);
       currentState = previousState;
       previousState = MAIN_MENU;
-      
+    }
+    else if(getFingerprintID() == FINGERPRINT_NOTFOUND){
+      display.println("Unknown user.\n Considered registering.");
+      display.display();
+      delay(2000);
+      currentState = previousState;
+      previousState = MAIN_MENU;
+    }
+    else{
+      display.println("Please try again.");
+      display.display();
+      delay(2000);
+      currentState = previousState;
+      previousState = MAIN_MENU;
     }
     delay(5);
     //int timeout = 0;
@@ -248,6 +261,7 @@ void displayFingerPrintMenu(bool isRegistering){
       //delay(5); 
     //}
   }
+  
 }
 
 void error_found(errorCodes e){

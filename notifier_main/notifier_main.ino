@@ -172,6 +172,10 @@ void state_START_MENU(){
         isFinishedLoad = true;
         user = "";
       }
+      // otherwise a load was falsely detected/not long enough, so reset the cycle timer
+      else{
+        startTime = millis(); // reset timer
+      }
       
     }
     // if a load is in progress and the sensor continues to detect vibrations (booleanAverage is true), reset the booleanAverage

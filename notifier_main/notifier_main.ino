@@ -21,6 +21,9 @@
 // Import Get Fingerprint Function
 #include "get_fingerprint.h"
 
+#include <SPI.h>
+#include <SD.h>
+
 // Constant Variables
 const unsigned long MINIMUMLOADCYCLETIME = 60000; // (Default: 60 seconds)
 
@@ -54,7 +57,7 @@ void setup() {
   setDebugMessageLevel(2);
   ArduinoCloud.printDebugInfo();
 
-
+  user = "Connected...";
   
   // Set up OLED display
   setup_OLED();

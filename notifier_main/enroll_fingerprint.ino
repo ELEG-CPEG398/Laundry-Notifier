@@ -73,22 +73,23 @@ uint8_t getFingerprintEnroll(String username) {
   if (p == FINGERPRINT_OK) {
     Serial.println("Prints matched!");
 
-  } 
-  else if(user == "Please enter name"){
-    Serial.println("Error: No name was entered");
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println("Error: \nNo name was entered");
-    display.println("Returning... \nPlease try again.");
-    display.display();
-    delay(3000);
-    return p;
   }
   else {
     Serial.println("Error: Model could not be created");
     display.clearDisplay();
     display.setCursor(0, 0);
     display.println("Error: \nFingerprints did not match");
+    display.println("Returning... \nPlease try again.");
+    display.display();
+    delay(3000);
+    return p;
+  }
+
+  if(user == "Please enter name"){
+    Serial.println("Error: No name was entered");
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.println("Error: \nNo name was entered");
     display.println("Returning... \nPlease try again.");
     display.display();
     delay(3000);

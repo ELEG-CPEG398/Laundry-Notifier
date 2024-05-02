@@ -24,6 +24,9 @@
 #include <SPI.h>
 #include <SD.h>
 
+
+#include <ArduinoJson.h>
+
 // Constant Variables
 const unsigned long MINIMUMLOADCYCLETIME = 60000; // (Default: 60 seconds)
 
@@ -34,6 +37,7 @@ short booleanSamples = 0;
 bool intakeResponse = false;
 bool loadInProgress = false;
 unsigned long startTime = millis();
+JsonDocument registered_users;
 
 void setup() {
   // Initialize serial and wait for port to open:
@@ -58,6 +62,9 @@ void setup() {
   ArduinoCloud.printDebugInfo();
 
   user = "Connected...";
+  
+  // Load json string imitator (jsonString) from the cloud and store into JsonDocument type
+  deserializeJson(registered_users, jsonString);
   
   // Set up OLED display
   setup_OLED();
@@ -223,4 +230,14 @@ void onMessageChange()  {
     user = message; // Save message to user's name
     Serial.println("Response from user: " + message); // debugging
   }
+}
+
+void updateJsonString(){
+  serializeJson(registered_users, JsonString);
+}
+
+void onJsonStringChange()  {
+  // Add your code here to act upon JsonString change
+  Serial.println("Successfully saved json to cloud...");
+  Serial.println(jsonString);
 }

@@ -11,7 +11,9 @@ const char PASS[]               = SECRET_OPTIONAL_PASS;    // Network password (
 const char DEVICE_KEY[]  = SECRET_DEVICE_KEY;    // Secret device password
 
 void onMessageChange();
+void onJsonStringChange();
 
+String jsonString;
 bool isFinishedLoad;
 String message;
 String user = "";
@@ -20,6 +22,7 @@ void initProperties(){
 
   ArduinoCloud.setBoardId(DEVICE_LOGIN_NAME);
   ArduinoCloud.setSecretDeviceKey(DEVICE_KEY);
+  ArduinoCloud.addProperty(jsonString, READWRITE, ON_CHANGE, onJsonStringChange);
   ArduinoCloud.addProperty(message, READWRITE, ON_CHANGE, onMessageChange);
   ArduinoCloud.addProperty(isFinishedLoad, READ, ON_CHANGE, NULL);
   ArduinoCloud.addProperty(user, READ, ON_CHANGE, NULL);

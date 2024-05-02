@@ -103,6 +103,10 @@ void handleButtonB() {
       currentState = REGISTER_MENU;
       displayRegisterMenu();
       break;
+    case REGISTER_MENU:
+      registered_users.clear();
+      finger.emptyDatabase();
+      break;
     default:
       break;
   }
@@ -238,7 +242,8 @@ void displayFingerPrintMenu(bool isRegistering){
     display.setTextSize(1);
     display.setTextColor(SH110X_WHITE);
     display.setCursor(0, 0);
-    getFingerprintEnroll(user);
+    getFingerprintEnroll();
+    updateJsonString();
     currentState = SETTINGS_MENU;
     previousState = MAIN_MENU;
     displaySettingsMenu();
@@ -252,9 +257,9 @@ void displayFingerPrintMenu(bool isRegistering){
     display.display();
     if(getFingerprintID() == FINGERPRINT_OK){
       int i = finger.fingerID;
-      user =  i;
-      Serial.println(i);
-      Serial.println("User: " + user);
+      user =  registered_users[String(i)].as<String>();
+      //Serial.println(i);
+      //Serial.println("User: " + user);
       currentState = previousState;
       previousState = MAIN_MENU;
     }

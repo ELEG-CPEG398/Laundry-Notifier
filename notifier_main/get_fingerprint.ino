@@ -55,6 +55,9 @@ uint8_t getFingerprintID() {
   p = finger.fingerSearch();
   if (p == FINGERPRINT_OK) {
     Serial.println("Found a print match!");
+     // found a match!
+    Serial.print("Found ID #"); Serial.print(finger.fingerID);
+    Serial.print(" Beloning to "); Serial.println(registered_users[String(finger.fingerID)].as<String>());
     return p;
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
     Serial.println("Communication error");
@@ -66,10 +69,6 @@ uint8_t getFingerprintID() {
     Serial.println("Unknown error");
     return p;
   }
-
-  // found a match!
-  Serial.print("Found ID #"); Serial.print(finger.fingerID);
-  Serial.print(" with confidence of "); Serial.println(finger.confidence);
 
   return finger.fingerID;
 }

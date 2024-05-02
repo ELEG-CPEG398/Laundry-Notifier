@@ -21,8 +21,7 @@
 // Import Get Fingerprint Function
 #include "get_fingerprint.h"
 
-#include <SPI.h>
-#include <SD.h>
+
 
 
 #include <ArduinoJson.h>
@@ -64,7 +63,11 @@ void setup() {
   user = "Connected...";
   
   // Load json string imitator (jsonString) from the cloud and store into JsonDocument type
-  deserializeJson(registered_users, jsonString);
+  if(jsonString != ""){
+    Serial.println("Initializing Json file");
+    Serial.println(jsonString);
+    deserializeJson(registered_users, jsonString);
+  }
   
   // Set up OLED display
   setup_OLED();
@@ -157,9 +160,9 @@ void state_START_MENU(){
   */
   
  
-  if ( (clk % SENSORDELAY) == 0){
-    Serial.println(((float)booleanSum)/((float)booleanSamples));
-  }
+  //if ( (clk % SENSORDELAY) == 0)
+    //Serial.println(((float)booleanSum)/((float)booleanSamples));
+  
 
   // Wait 1 second before attempting to change boolean value
   if((clk % 1000) == 0){
@@ -233,7 +236,9 @@ void onMessageChange()  {
 }
 
 void updateJsonString(){
-  serializeJson(registered_users, JsonString);
+  serializeJson(registered_users, jsonString);
+  Serial.println("Updated json...");
+  Serial.println(jsonString);
 }
 
 void onJsonStringChange()  {

@@ -22,6 +22,6 @@ Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 bool get_fingerprint_setup(void);
 uint8_t getFingerprintID(void);   
 int getFingerprintIDez(void);
-uint8_t getFingerprintEnroll(String username);
+uint8_t getFingerprintEnroll(void);
 
 #endif

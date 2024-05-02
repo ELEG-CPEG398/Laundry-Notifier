@@ -56,6 +56,7 @@ void calibrateSensor(){
   THRESHOLD = stdDev * 1.5;
   Serial.print("Threshold value change to: ");
   Serial.println(THRESHOLD);
+  updateThresholdCloudChange();
 }
 
 // Detects vibrations by comparing the current standard deviation of the magnitude of acceleration to its "natural" state

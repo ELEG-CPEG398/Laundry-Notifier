@@ -11,7 +11,7 @@ void setup_OLED() {
   display.drawBitmap(0, 0, BlackNWhiteLogo, 128, 64, 1);
   display.display();
 
-  delay(2000);
+  delay(2000); 
   //display.clearDisplay();
   //display.display();
   display.setRotation(1);
@@ -84,6 +84,7 @@ void handleButtonA() {
     case CALIBRATE_MENU:
       THRESHOLD = 1.0; // Reset to default value
       Serial.println("Threshold value reset");
+      updateThresholdCloudChange();
       break;
     case REGISTER_MENU:
       displayFingerPrintMenu(true);
@@ -284,6 +285,15 @@ void displayFingerPrintMenu(bool isRegistering){
     //}
   }
   
+}
+
+void displayConnectingMenu(){
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SH110X_WHITE);
+  display.setCursor(4, 1);
+  display.println("Connecting. . .");
+  display.display();
 }
 
 void error_found(errorCodes e){

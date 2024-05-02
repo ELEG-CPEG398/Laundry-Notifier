@@ -12,8 +12,10 @@ const char DEVICE_KEY[]  = SECRET_DEVICE_KEY;    // Secret device password
 
 void onMessageChange();
 void onJsonStringChange();
+void onThresholdCloudChange();
 
 String jsonString;
+float threshold_cloud;
 bool isFinishedLoad;
 String message;
 String user = "";
@@ -24,6 +26,7 @@ void initProperties(){
   ArduinoCloud.setSecretDeviceKey(DEVICE_KEY);
   ArduinoCloud.addProperty(jsonString, READWRITE, ON_CHANGE, onJsonStringChange);
   ArduinoCloud.addProperty(message, READWRITE, ON_CHANGE, onMessageChange);
+  ArduinoCloud.addProperty(threshold_cloud, READWRITE, ON_CHANGE, onThresholdCloudChange);
   ArduinoCloud.addProperty(isFinishedLoad, READ, ON_CHANGE, NULL);
   ArduinoCloud.addProperty(user, READ, ON_CHANGE, NULL);
 

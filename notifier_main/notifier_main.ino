@@ -21,9 +21,6 @@
 // Import Get Fingerprint Function
 #include "get_fingerprint.h"
 
-
-
-
 #include <ArduinoJson.h>
 
 // Constant Variables
@@ -37,6 +34,7 @@ bool intakeResponse = false;
 bool loadInProgress = false;
 unsigned long startTime = millis();
 JsonDocument registered_users;
+bool initialize = true;
 
 void setup() {
   // Initialize serial and wait for port to open:
@@ -61,13 +59,7 @@ void setup() {
   ArduinoCloud.printDebugInfo();
 
   user = "Connected...";
-  
-  // Load json string imitator (jsonString) from the cloud and store into JsonDocument type
-  if(jsonString != ""){
-    Serial.println("Initializing Json file");
-    Serial.println(jsonString);
-    deserializeJson(registered_users, jsonString);
-  }
+
   
   // Set up OLED display
   setup_OLED();
@@ -77,13 +69,17 @@ void setup() {
   if(VibrationSensorSetup()){
     error_found(VIBRATIONSENSOR_FAILED);
   }
-  Serial.println("Setup for Vibration Sensor Complete");
+
+  
+  
+  
 
   // Set up Fingerprint Sensor
   if(get_fingerprint_setup()){
     error_found(FINGERPRINT_FAILED);
   }
   Serial.println("Setup for Fingerprint Sensor Complete");
+
 }
 
 
@@ -102,39 +98,64 @@ void takeResponse(String prompt){
 }
 
 void loop() {
-  OLED_loop();
   ArduinoCloud.update();
-  
-  switch(currentState){
-    case MAIN_MENU:
-      break;
-    case START_MENU: 
-      state_START_MENU();
-      break;
-    case CALIBRATE_MENU:
-      state_CALIBRATE_MENU();
-      break;
-    case SETTINGS_MENU:
-      break;
-    case REGISTER_MENU:
-      break;
-    case FINGERPRINT_MENU:
-      break;
-    default:
-      Serial.println("Error: Undefined State");
+  if ((ArduinoCloud.connected() == 0))  { // Note: Falsely connects at the beginning. Stills needs an additional delay
+    // Wait for connection
+    displayConnectingMenu();
+    //ArduinoCloud.update();
+  }
+  else{
+    if(initialize && clk > 10000){  // A delay is needed, otherwise cloud variables aren't initialized
+      // Cloud Variables
+      // Set Threshold
+      Serial.println(clk);
+      THRESHOLD = threshold_cloud;
+      Serial.print("Threshold set to: "); Serial.println(THRESHOLD);
+      Serial.println("Setup for Vibration Sensor Complete");
+      // Load json string imitator (jsonString) from the cloud and store into JsonDocument type
+      Serial.println("Initializing Json file");
+      Serial.println(jsonString);
+      deserializeJson(registered_users, jsonString);
+      initialize = false;
+      displayNeedsUpdate = true;
+      displayMainMenu();
+    }
+
+    OLED_loop();
+    
+    
+    switch(currentState){
+      case MAIN_MENU:
+        break;
+      case START_MENU: 
+        state_START_MENU();
+        break;
+      case CALIBRATE_MENU:
+        state_CALIBRATE_MENU();
+        break;
+      case SETTINGS_MENU:
+        break;
+      case REGISTER_MENU:
+        break;
+      case FINGERPRINT_MENU:
+        break;
+      default:
+        Serial.println("Error: Undefined State");
+    }
+
+    //if(!digitalRead(BUTTON_A)){
+      //takeResponse("What's your name?");
+    //}
   }
 
-  //if(!digitalRead(BUTTON_A)){
-    //takeResponse("What's your name?");
-  //}
-  clk += SAMPLERATE;
-  if(clk > 32000)
-    clk = 0;
+    clk += SAMPLERATE;
+    if(clk > 32000)
+      clk = 0;
+
+    
 
   
-
-  
-  delay(SAMPLERATE);
+    delay(SAMPLERATE);
 }
 
 void state_START_MENU(){
@@ -239,10 +260,22 @@ void updateJsonString(){
   serializeJson(registered_users, jsonString);
   Serial.println("Updated json...");
   Serial.println(jsonString);
+  ArduinoCloud.update();
 }
 
 void onJsonStringChange()  {
-  // Add your code here to act upon JsonString change
   Serial.println("Successfully saved json to cloud...");
   Serial.println(jsonString);
+}
+
+void updateThresholdCloudChange(){
+  threshold_cloud = THRESHOLD;
+  Serial.println("Updated threshold_cloud...");
+  Serial.println(threshold_cloud);
+  ArduinoCloud.update();
+}
+
+void onThresholdCloudChange()  {
+  Serial.println("Successfully saved threshold value to cloud...");
+  Serial.println(threshold_cloud);
 }

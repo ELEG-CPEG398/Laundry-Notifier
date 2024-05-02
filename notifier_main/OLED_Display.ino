@@ -4,10 +4,16 @@ void setup_OLED() {
   display.begin(0x3C, true); // Initialize the display
 
   Serial.println("OLED begun");
-  display.display();
-  delay(1000);
+  //display.display();
+
   display.clearDisplay();
+  delay(200);
+  display.drawBitmap(0, 0, BlackNWhiteLogo, 128, 64, 1);
   display.display();
+
+  delay(2000);
+  //display.clearDisplay();
+  //display.display();
   display.setRotation(1);
 
   pinMode(BUTTON_A, INPUT_PULLUP);
